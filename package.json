@@ -1,0 +1,22 @@
+{
+  "name": "chainchat",
+  "version": "1.0.0",
+  "description": "A secure messenging client using blockchain",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ajpauwels/chainchat.git"
+  },
+  "author": "Alexandre Pauwels, Siddharth Ramesh, and John Sartore",
+  "license": "SEE LICENSE IN LICENSE",
+  "bugs": {
+    "url": "https://github.com/ajpauwels/chainchat/issues"
+  },
+  "homepage": "https://github.com/ajpauwels/chainchat#readme",
+  "dependencies": {
+    "express": "^4.13.4"
+  }
+}
