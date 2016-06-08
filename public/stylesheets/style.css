@@ -1,6 +1,37 @@
-body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+html, body  {
+  height: 100%;
+  width: 100%;
+}
+
+#header {
+  padding-left: 40px;
+  height: 5%;
+  display: block;
+  background-color: #006699;
+  color: white;
+  font-size: 200%;
+}
+
+#chatview {
+  height: 75%;
+}
+
+#sendview {
+  height: 20%;
+  background-color: #ddd;
+}
+
+#chatinput {
+  display: block;
+  width: 65%;
+  height: 100%;
+  border: none;
+  overflow: auto;
+  outline: none;
+}
+
+#submit {
+  width: 30%;
 }
 
 a {
