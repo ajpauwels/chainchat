@@ -6,7 +6,8 @@ html, body  {
 #header {
   padding-left: 40px;
   height: 5%;
-  display: block;
+  min-height: 50px;
+  line-height: 150%;
   background-color: #006699;
   color: white;
   font-size: 200%;
@@ -18,20 +19,31 @@ html, body  {
 
 #sendview {
   height: 20%;
-  background-color: #ddd;
+  background-color: #eee;
 }
 
 #chatinput {
-  display: block;
-  width: 65%;
+  margin: 0px;
+  float: left;
+  width: 90%;
   height: 100%;
+  background-color: #eee;
   border: none;
   overflow: auto;
   outline: none;
+  resize: none;
 }
 
-#submit {
-  width: 30%;
+#send {
+  padding: 0px;
+  margin: 0px;
+  background-color: #006699;
+  color: white;
+  outline: none;
+  overflow: none;
+  width: 9%;
+  height: 100%;
+
 }
 
 a {
