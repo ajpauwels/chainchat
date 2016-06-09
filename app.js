@@ -29,6 +29,15 @@ app.use('/users', users);
 
 io.on('connection', function(socket) {
   console.log('A user connected to the socket.io server');
+
+  socket.on('disconnect', function() {
+    console.log('A user disconnected from the socket.io server');
+  })
+
+  socket.on('message', function(msg) {
+    console.log('New message: ' + msg);
+    io.emit('message', msg);
+  })
 });
 
 // catch 404 and forward to error handler
