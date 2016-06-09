@@ -1,49 +1,75 @@
 html, body  {
   height: 100%;
   width: 100%;
+  background-image: url(/images/chatbg.png);
 }
 
 #header {
   padding-left: 40px;
-  height: 5%;
+  height: 8%;
   min-height: 50px;
-  line-height: 150%;
   background-color: #006699;
   color: white;
-  font-size: 200%;
+  font-size: 40px;
+  line-height: 80px;
 }
 
+/* Background pattern from subtlepatterns.com */
 #chatview {
-  height: 75%;
+  height: 80%;
 }
 
 #sendview {
-  height: 20%;
-  background-color: #eee;
+  height: 10%;
+  width: 90%;
+  background-color: rgba(255, 255, 255, 0.6);
+  margin: 0px auto 0px auto;
+  border-radius: 20px;
+  box-sizing: border-box;
+  border: 1px solid #bbb;
+  min-height: 100px;
+  min-width: 1000px;
 }
 
 #chatinput {
+  box-sizing: border-box;
+  background-color: rgba(255, 255, 255, 0);
   margin: 0px;
+  padding: 20px;
   float: left;
   width: 90%;
   height: 100%;
-  background-color: #eee;
-  border: none;
-  overflow: auto;
+  overflow: none;
   outline: none;
   resize: none;
+  border: none;
+  border-radius: 20px;
 }
 
 #send {
   padding: 0px;
   margin: 0px;
+  text-align: center;
   background-color: #006699;
   color: white;
   outline: none;
   overflow: none;
-  width: 9%;
+  border: none;
+  width: 10%;
   height: 100%;
+  border-radius: 20px;
+}
 
+#send:hover {
+  background-color: rgba(255, 255, 255, 0);
+}
+
+#send:hover > .material-icons.md-48 {
+  color: #006699;
+}
+
+.material-icons.md-48 {
+  font-size: 48px;
 }
 
 a {

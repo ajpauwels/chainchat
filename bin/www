@@ -18,8 +18,12 @@ app.set('port', port);
 /**
  * Create HTTP server.
  */
-
 var server = http.createServer(app);
+
+/**
+ * Attach the server to the socket.io handle from app.js
+ */
+app.io.attach(server);
 
 /**
  * Listen on provided port, on all network interfaces.
