@@ -29,23 +29,21 @@ app.use('/users', users);
 
 io.on('connection', function(socket) {
   console.log('A user connected to the socket.io server');
-  io.emit('message','a user connected');
-  socket.on('join', function(name) {
-    people[socket.id] = name;
-    io.emit('message', 'You have connected' + name );
-
-  })
+  console.log('User ID: ', socket.id);
+  socket.broadcast.emit('message', 'Server: ' + socket.id + ' has connected');
+  socket.emit('message', 'you connected');
+  //people[socket.id] = name;       TODO make name login
 
 
   socket.on('disconnect', function() {
-    console.log('A user disconnected from the socket.io server');
-      socket.emit('message','a user disconnected');
+    console.log(socket.id + ' disconnected from the socket.io server');
+      socket.emit('message','Server: ' + socket.id + ' disconnected');
 
   })
 
   socket.on('message', function(msg) {
     console.log('New message: ' + msg);
-    io.emit('message', msg);
+    io.emit('message',socket.id + ': ' + msg);
   })
 });
 
