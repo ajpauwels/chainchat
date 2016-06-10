@@ -10,8 +10,8 @@ var users = require('./routes/users');
 
 var app = express();
 var io = require('socket.io')();
+var people = {};
 app.io = io;
-
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
@@ -29,9 +29,18 @@ app.use('/users', users);
 
 io.on('connection', function(socket) {
   console.log('A user connected to the socket.io server');
+  io.emit('message','a user connected');
+  socket.on('join', function(name) {
+    people[socket.id] = name;
+    io.emit('message', 'You have connected' + name );
+
+  })
+
 
   socket.on('disconnect', function() {
     console.log('A user disconnected from the socket.io server');
+      socket.emit('message','a user disconnected');
+
   })
 
   socket.on('message', function(msg) {
