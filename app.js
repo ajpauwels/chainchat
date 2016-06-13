@@ -13,6 +13,7 @@ var users = require('./routes/users');
 // Get the app running with socket.io
 var app = express();
 var io = require('socket.io')();
+var people = {};
 app.io = io;
 
 // Get our REST client
@@ -38,15 +39,26 @@ app.use('/', routes);
 app.use('/users', users);
 
 io.on('connection', function(socket) {
-  console.log('A user connected to the socket.io server');
+  people[socket.id] = {}
 
+  console.log('A user connected to the socket.io server');
+  socket.on('username', function(username) {
+    people[socket.id].name = username;
+    people[socket.id].color = getRandomColor(); 
+    socket.broadcast.emit('message', 'Server: ' + people[socket.id].name + ' has connected');
+    console.log('User ID: ', people[socket.id].name);
+    socket.emit('usermsg', 'Welcome ' + people[socket.id].name );
+  });
+  
   socket.on('disconnect', function() {
-    console.log('A user disconnected from the socket.io server');
-  })
+    console.log(people[socket.id].name + ' disconnected from the socket.io server');
+      socket.emit('message','Server: ' + people[socket.id] + ' disconnected');
+  });
 
   socket.on('message', function(msg) {
-    console.log('New message: ' + msg);
-    io.emit('message', msg);
+    people[socket.id].msg = ' ' + msg;
+    console.log('New message from ' + people[socket.id].name +': ' + msg);
+    io.emit('message', JSON.stringify(people[socket.id]));
 
     if (msg == 'bc') {
       var payload = {
@@ -68,8 +80,17 @@ io.on('connection', function(socket) {
         console.log(response);
       });
     }
-  })
+  });
 });
+
+function getRandomColor() {
+  var letters = '0123456789ABCDEF'.split('');
+  var color = '#';
+  for (var i = 0; i < 6; i++ ) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+}
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
