@@ -28,24 +28,29 @@ app.use('/', routes);
 app.use('/users', users);
 
 io.on('connection', function(socket) {
+
   console.log('A user connected to the socket.io server');
-  console.log('User ID: ', socket.id);
-  socket.broadcast.emit('message', 'Server: ' + socket.id + ' has connected');
-  socket.emit('message', 'you connected');
+  socket.on('username', function(username) {
+    people[socket.id] = username;
+    socket.broadcast.emit('message', 'Server: ' + people[socket.id] + ' has connected');
+    console.log('User ID: ', people[socket.id]);
+    socket.emit('message', 'Welcome ' + people[socket.id] );
+  });
+
   //people[socket.id] = name;       TODO make name login
 
 
   socket.on('disconnect', function() {
-    console.log(socket.id + ' disconnected from the socket.io server');
-      socket.emit('message','Server: ' + socket.id + ' disconnected');
-
-  })
+    console.log(people[socket.id] + ' disconnected from the socket.io server');
+      socket.emit('message','Server: ' + people[socket.id] + ' disconnected');
+  });
 
   socket.on('message', function(msg) {
     console.log('New message: ' + msg);
-    io.emit('message',socket.id + ': ' + msg);
-  })
+    io.emit('message',people[socket.id] + ': ' + msg);
+  });
 });
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

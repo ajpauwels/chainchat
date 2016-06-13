@@ -28,6 +28,7 @@ html, body  {
   border: 1px solid #bbb;
   min-height: 100px;
   min-width: 1000px;
+  overflow: auto;
 }
 
 #sendview {
