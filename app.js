@@ -23,6 +23,21 @@ var rest = new Client();
 // Process credentials based environment (Bluemix vs. local)
 var creds = require('./creds').credentials;
 
+// Load and configure the IBM Blockchain SDK 
+var IBMBC = require('ibm-blockchain-js');
+var bc = new IBMBC();
+var chaincode = {};
+
+var options = {
+  network: {
+    peers: creds.peers,
+    users: creds.users,
+  },
+  chaincode: {
+    
+  }
+}
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
