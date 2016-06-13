@@ -14,6 +14,23 @@ html, body  {
   line-height: 80px;
 }
 
+.initial {
+  background-position: center;
+  text-align: center;
+  width: 24px;
+  height: 22px;
+  border-radius: 50%;
+  color: white;
+  display: inline-block;
+  font-size: 18px;
+  font-weight: bold;
+  padding-top: 2px;
+}
+
+.para {
+  margin-bottom: 5px;
+}
+
 /* Background pattern from subtlepatterns.com */
 #chatview {
   height: 80%;

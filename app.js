@@ -28,29 +28,37 @@ app.use('/', routes);
 app.use('/users', users);
 
 io.on('connection', function(socket) {
+  people[socket.id] = {}
 
   console.log('A user connected to the socket.io server');
   socket.on('username', function(username) {
-    people[socket.id] = username;
-    socket.broadcast.emit('message', 'Server: ' + people[socket.id] + ' has connected');
-    console.log('User ID: ', people[socket.id]);
-    socket.emit('message', 'Welcome ' + people[socket.id] );
+    people[socket.id].name = username;
+    people[socket.id].color = getRandomColor(); 
+    socket.broadcast.emit('message', 'Server: ' + people[socket.id].name + ' has connected');
+    console.log('User ID: ', people[socket.id].name);
+    socket.emit('usermsg', 'Welcome ' + people[socket.id].name );
   });
-
-  //people[socket.id] = name;       TODO make name login
-
-
+  
   socket.on('disconnect', function() {
-    console.log(people[socket.id] + ' disconnected from the socket.io server');
+    console.log(people[socket.id].name + ' disconnected from the socket.io server');
       socket.emit('message','Server: ' + people[socket.id] + ' disconnected');
   });
 
   socket.on('message', function(msg) {
-    console.log('New message: ' + msg);
-    io.emit('message',people[socket.id] + ': ' + msg);
+    people[socket.id].msg = ' ' + msg;
+    console.log('New message from ' + people[socket.id].name +': ' + msg);
+    io.emit('message', JSON.stringify(people[socket.id]));//TOOD
   });
 });
 
+function getRandomColor() {
+  var letters = '0123456789ABCDEF'.split('');
+  var color = '#';
+  for (var i = 0; i < 6; i++ ) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+}
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
