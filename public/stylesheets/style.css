@@ -15,6 +15,12 @@ html, body  {
   margin-bottom: 20px;
 }
 
+.welcome {
+  margin-bottom: 5px;
+  font-size: 24px;
+  font-weight: bold;
+}
+
 .initial {
   background-position: center;
   text-align: center;
@@ -23,7 +29,7 @@ html, body  {
   border-radius: 50%;
   color: white;
   display: inline-block;
-  font-size: 18px;
+  font-size: 20px;
   font-weight: bold;
   font-size: 20px;
 }
