@@ -1,3 +1,15 @@
+/**
+ * This app runs the ChainChat messaging client, an IBM Blockchain-powered high-security,
+ * decentralized instant-messenger.
+ * 
+ * Contributors:
+ *  - Alexandre Pauwels
+ *  - Jack Sartore
+ *  - Sid Ramesh
+ * 
+ * Last updated: 06/14/2016
+ */
+
 // Express and dependencies
 var express = require('express');
 var path = require('path');
@@ -6,7 +18,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
-// Routing
+// Routing files
 var routes = require('./routes/index');
 var users = require('./routes/users');
 
@@ -20,29 +32,14 @@ app.io = io;
 var Client = require('node-rest-client').Client;
 var rest = new Client();
 
-// Process credentials based environment (Bluemix vs. local)
+// Process blockchain credentials based environment (Bluemix vs. local)
 var creds = require('./creds').credentials;
 
-// Load and configure the IBM Blockchain SDK 
-var IBMBC = require('ibm-blockchain-js');
-var bc = new IBMBC();
-var chaincode = {};
-
-var options = {
-  network: {
-    peers: creds.peers,
-    users: creds.users,
-  },
-  chaincode: {
-    
-  }
-}
-
-// view engine setup
+// View engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
-// uncomment after placing your favicon in /public
+// Set favicon, logger, parsers, and the static assets directory
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
@@ -50,13 +47,17 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Set up routes
 app.use('/', routes);
 app.use('/users', users);
 
+// When a user connects through sockets add him to the array and set up bindings
 io.on('connection', function(socket) {
   people[socket.id] = {}
 
   console.log('A user connected to the socket.io server');
+
+  // Set the username when received from client
   socket.on('username', function(username) {
     people[socket.id].name = username;
     people[socket.id].color = getRandomColor(); 
@@ -65,11 +66,13 @@ io.on('connection', function(socket) {
     socket.emit('usermsg', 'Welcome ' + people[socket.id].name );
   });
   
+  // Log when a user disconects
   socket.on('disconnect', function() {
     console.log(people[socket.id].name + ' disconnected from the socket.io server');
       socket.emit('message','Server: ' + people[socket.id] + ' disconnected');
   });
 
+  // When a message is received, emit it to everyone
   socket.on('message', function(msg) {
     people[socket.id].msg = ' ' + msg;
     console.log('New message from ' + people[socket.id].name +': ' + msg);
@@ -98,6 +101,11 @@ io.on('connection', function(socket) {
   });
 });
 
+/**
+ * Generates a random hex-value color
+ * 
+ * @return The color as a hex-value string
+ */
 function getRandomColor() {
   var letters = '0123456789ABCDEF'.split('');
   var color = '#';
@@ -107,17 +115,16 @@ function getRandomColor() {
   return color;
 }
 
-// catch 404 and forward to error handler
+// Catch 404 and forward to error handler
 app.use(function(req, res, next) {
   var err = new Error('Not Found');
   err.status = 404;
   next(err);
 });
 
-// error handlers
+// Error handlers
 
-// development error handler
-// will print stacktrace
+// Development error handler will print stack trace
 if (app.get('env') === 'development') {
   app.use(function(err, req, res, next) {
     res.status(err.status || 500);
@@ -128,8 +135,7 @@ if (app.get('env') === 'development') {
   });
 }
 
-// production error handler
-// no stacktraces leaked to user
+// production error handler does not leak stacktraces to user
 app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error', {
