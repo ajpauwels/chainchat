@@ -18,11 +18,22 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
-//Cloudant 
+//Cloudant and nano
+var new_creds = {
+                    host: 'fdc45491-fa13-4064-a77d-d433ae04a9ec-bluemix.cloudant.com',
+                    port: "443",
+                    username: 'itedifergaideredisseckst', //Key
+                    password: '336c044aff82222a34828992bdbc830ff5a6bc5e',//API password
+
+                };
+nano = require('nano')('https://' + new_creds.username + ':' + new_creds.password + '@' + new_creds.host + ':' + new_creds.port);	//lets use api key to make the docs
+db = nano.use("users"); 
+
+/* OLD DO NOT USE
 var Cloudant = require('cloudant');
 var ckey = 'itedifergaideredisseckst';
 var cpass = '336c044aff82222a34828992bdbc830ff5a6bc5e';
-var cloudant = Cloudant({acount: "cc", key: ckey, password: cpass});
+var cloudant = Cloudant({acount: "cc", key: ckey, password: cpass});*/
 
 //var db = cloudant.db.user('users');
 
