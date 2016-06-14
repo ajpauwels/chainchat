@@ -18,6 +18,14 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
+//Cloudant 
+/*var Cloudant = require('cloudant');
+var ckey = 'itedifergaideredisseckst';
+var cpass = '336c044aff82222a34828992bdbc830ff5a6bc5e';
+var cloudant = Cloudant({acount: "cc", key: ckey, password: cpass});
+var db = cloudant.db.user('users');
+
+*/
 // Routing files
 var routes = require('./routes/index');
 var users = require('./routes/users');
