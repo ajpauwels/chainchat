@@ -60,14 +60,14 @@ io.on('connection', function(socket) {
   socket.on('username', function(username) {
     people[socket.id].name = username;
     people[socket.id].color = getRandomColor(); 
-    socket.broadcast.emit('message', 'Server: ' + people[socket.id].name + ' has connected');
+    socket.broadcast.emit('usermsg', 'Server: ' + people[socket.id].name + ' has connected');
     console.log('User ID: ', people[socket.id].name);
     socket.emit('usermsg', 'Welcome ' + people[socket.id].name );
   });
   
   socket.on('disconnect', function() {
     console.log(people[socket.id].name + ' disconnected from the socket.io server');
-      socket.emit('message','Server: ' + people[socket.id] + ' disconnected');
+      socket.broadcast.emit('usermsg','Server: ' + people[socket.id].name + ' disconnected');
   });
 
   socket.on('message', function(msg) {

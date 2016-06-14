@@ -2,9 +2,10 @@ var socket = io();
 
 $(document).ready(function() {
 	var username = prompt("Who are you?", "Username");
-	while( username == "Username") {
-		username = prompt("Who are you?", "Username");
+	while( username == "Username" || username.trim() == "") {
+		username = prompt("Please make a new username", "Username");
 	}
+	username = username.trim();
 	socket.emit('username', username);
 	$('#send').click(function() {
 		socket.emit('message', $('#chatinput').val());
