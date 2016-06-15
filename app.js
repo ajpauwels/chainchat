@@ -18,6 +18,26 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
+//Cloudant and nano
+var new_creds = {
+                    host: 'fdc45491-fa13-4064-a77d-d433ae04a9ec-bluemix.cloudant.com',
+                    port: "443",
+                    username: 'itedifergaideredisseckst', //Key
+                    password: '336c044aff82222a34828992bdbc830ff5a6bc5e',//API password
+
+                };
+nano = require('nano')('https://' + new_creds.username + ':' + new_creds.password + '@' + new_creds.host + ':' + new_creds.port);	//lets use api key to make the docs
+db = nano.use("users"); 
+
+/* OLD DO NOT USE
+var Cloudant = require('cloudant');
+var ckey = 'itedifergaideredisseckst';
+var cpass = '336c044aff82222a34828992bdbc830ff5a6bc5e';
+var cloudant = Cloudant({acount: "cc", key: ckey, password: cpass});*/
+
+//var db = cloudant.db.user('users');
+
+
 // Routing files
 var routes = require('./routes/index');
 var users = require('./routes/users');
@@ -85,7 +105,7 @@ io.on('connection', function(socket) {
   socket.on('username', function(username) {
     people[socket.id].name = username;
     people[socket.id].color = getRandomColor(); 
-    socket.broadcast.emit('message', 'Server: ' + people[socket.id].name + ' has connected');
+    socket.broadcast.emit('usermsg', 'Server: ' + people[socket.id].name + ' has connected');
     console.log('User ID: ', people[socket.id].name);
     socket.emit('usermsg', 'Welcome ' + people[socket.id].name );
   });
@@ -93,7 +113,7 @@ io.on('connection', function(socket) {
   // Log when a user disconects
   socket.on('disconnect', function() {
     console.log(people[socket.id].name + ' disconnected from the socket.io server');
-      socket.emit('message','Server: ' + people[socket.id] + ' disconnected');
+      socket.broadcast.emit('usermsg','Server: ' + people[socket.id].name + ' disconnected');
   });
 
   // When a message is received, emit it to everyone

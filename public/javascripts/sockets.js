@@ -2,9 +2,10 @@ var socket = io();
 
 $(document).ready(function() {
 	var username = prompt("Who are you?", "Username");
-	while( username == "Username") {
-		username = prompt("Who are you?", "Username");
+	while( username == "Username" || username.trim() == "") {
+		username = prompt("Please make a new username", "Username");
 	}
+	username = username.trim();
 	socket.emit('username', username);
 	$('#send').click(function() {
 		socket.emit('message', $('#chatinput').val());
@@ -21,7 +22,7 @@ $(document).ready(function() {
 });
 
 socket.on('usermsg', function(msg) {
-	$('#chatview').append($('<p>').text(msg));
+	$('#chatview').append($('<p>', {class: "welcome"}).text(msg));
 	updateScroll();
 });
 
@@ -29,7 +30,7 @@ socket.on('message', function(msg) {
 	var usr = JSON.parse(msg);
 	var newpelem = $('<p>', {class: "para"});
 	var newspan = $('<span>', {class: "initial"}).css('background-color', usr.color);
-	newspan.text(usr.name[0]);
+	newspan.text(usr.name[0].toLowerCase());
 	newpelem.text(usr.msg);
 	newpelem.prepend(newspan);
 	$('#chatview').append(newpelem);
