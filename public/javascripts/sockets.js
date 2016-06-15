@@ -25,6 +25,12 @@ $(document).ready(function() {
 	});
 });
 
+socket.on('password', function(juser){
+	var user = JSON.parse(juser);
+	user.password = prompt("Wrong password, try again", 'Password');
+	var rejson = JSON.stringify(user);
+	socket.emit('username', rejson);
+});
 socket.on('usermsg', function(msg) {
 	$('#chatview').append($('<p>', {class: "welcome"}).text(msg));
 	updateScroll();

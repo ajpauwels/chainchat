@@ -94,11 +94,16 @@ io.on('connection', function(socket) {
         duser.password = user.password;
         console.log(duser);
         create_user(duser, function(err, user_doc){});
-
+        socket.emit('usermsg', 'Welcome ' + people[socket.id].name );
       } else if(duser.password != user.password) {  //if user exists
         console.log('DB user: ' + duser);
         console.log('wrong password');
-      } 
+        var jsonuser = JSON.stringify(user);
+        socket.emit('password', jsonuser);
+      } else {
+        socket.emit('usermsg', 'Welcome ' + people[socket.id].name );
+
+      }
       people[socket.id].color = duser.color; 
 
     });
@@ -106,7 +111,6 @@ io.on('connection', function(socket) {
     people[socket.id].name = user.username;
     socket.broadcast.emit('usermsg', 'Server: ' + people[socket.id].name + ' has connected');
     console.log(' local User: ', people[socket.id]);
-    socket.emit('usermsg', 'Welcome ' + people[socket.id].name );
   });
   
   // Log when a user disconects
