@@ -35,6 +35,30 @@ var rest = new Client();
 // Process blockchain credentials based environment (Bluemix vs. local)
 var creds = require('./creds').credentials;
 
+// Setup and configure the hyperledger SDK
+var hlc = require('hlc');
+var chain = hlc.newChain("chainchat");
+chain.setKeyValStore(hlc.newFileKeyValStore('./tmp/keyValStore'));
+
+// Retrieve the CA credentials and set member services in the SDK - should only be one
+var caCreds = null;
+for (var key in creds.ca) {
+  if (creds.ca.hasOwnProperty(key)) {
+    caCreds = creds.ca[key];
+  }
+}
+if (caCreds == null) {
+  console.log("[ERROR] Unable to retrieve credentials for the member services");
+} else {
+  chain.setMemberServicesUrl("grpc://" + caCreds.discovery_host + ":" + caCreds.discovery_port);
+}
+
+// Retrieve and set the peers
+for (var peer in ca.peers) {
+  chain.addPeer("grpc://" + peer.discovery_host + ":" + peer.discovery_port);
+}
+
+
 // View engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
