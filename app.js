@@ -17,6 +17,7 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var color1 = '';
 
 //Cloudant and nano
 var new_creds = {
@@ -78,11 +79,33 @@ io.on('connection', function(socket) {
   console.log('A user connected to the socket.io server');
 
   // Set the username when received from client
-  socket.on('username', function(username) {
-    people[socket.id].name = username;
-    people[socket.id].color = getRandomColor(); 
+  socket.on('username', function(jusername) {
+    console.log(jusername);
+    var user = JSON.parse(jusername); //The user locally
+    get_user(user.username, function(err, user_doc){
+      var duser = user_doc; //The user from the database
+      if( err != null ) { //User doesn't exists, create new
+        console.log("user does not exists!");
+        //Create user
+        //people[socket.id].color = getRandomColor();
+        duser._id = user.username;
+        duser.name = user.username;
+        duser.color = getRandomColor();
+        duser.password = user.password;
+        console.log(duser);
+        create_user(duser, function(err, user_doc){});
+
+      } else if(duser.password != user.password) {  //if user exists
+        console.log('DB user: ' + duser);
+        console.log('wrong password');
+      } 
+      people[socket.id].color = duser.color; 
+
+    });
+
+    people[socket.id].name = user.username;
     socket.broadcast.emit('usermsg', 'Server: ' + people[socket.id].name + ' has connected');
-    console.log('User ID: ', people[socket.id].name);
+    console.log(' local User: ', people[socket.id]);
     socket.emit('usermsg', 'Welcome ' + people[socket.id].name );
   });
   
@@ -135,6 +158,29 @@ function getRandomColor() {
   return color;
 }
 
+//get a user from the database by username
+function get_user(username, cb) { // username is a string
+  db.get(username, {}, function(err, body){
+    if(cb){
+      if(!err && body) cb(null, body);
+      else if(err && err.statusCode) cb(err.statusCode, {error: err.error, reason: err.reaosn});
+      else cb(500, {error: err, reason: 'unknown!'});
+    }
+  });
+}
+
+function create_user(user, cb) { // user is a json object
+  db.insert(user, function(err, body){
+    if(cb){
+      if(!err && body){
+        user._rev = body.rev;
+        cb(null, user);
+      }
+      else if(err && err.statusCode) cb(err.statusCode, {error: err.error, reason: err.reason});
+      else cb(500, {error: err, reason: 'unknown!' });
+    }
+  });
+}
 // Catch 404 and forward to error handler
 app.use(function(req, res, next) {
   var err = new Error('Not Found');

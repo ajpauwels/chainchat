@@ -1,12 +1,16 @@
 var socket = io();
 
 $(document).ready(function() {
-	var username = prompt("Who are you?", "Username");
-	while( username == "Username" || username.trim() == "") {
-		username = prompt("Please make a new username", "Username");
+	var user = {};
+	user.username = prompt("Who are you?", "Username");
+	while( user.username == "Username" || user.username.trim() == "") {
+		user.username = prompt("Please make a new username", "Username");
 	}
-	username = username.trim();
-	socket.emit('username', username);
+	//user.username = user.username.trim();
+	user.password = prompt("Password for " + user.username + ":");
+	var juser = JSON.stringify(user);
+	console.log(juser);
+	socket.emit('username', juser);
 	$('#send').click(function() {
 		socket.emit('message', $('#chatinput').val());
 		$('#chatinput').val('');
