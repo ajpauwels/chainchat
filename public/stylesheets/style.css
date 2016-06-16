@@ -35,8 +35,12 @@ html, body  {
 }
 
 .para {
-  margin-bottom: 5px;
+  margin-bottom: 2px;
   font-size: 20px;
+}
+
+.time {
+  font-size: 12px;
 }
 
 /* Background pattern from subtlepatterns.com */

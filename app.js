@@ -84,18 +84,21 @@ io.on('connection', function(socket) {
     var user = JSON.parse(jusername); //The user locally
     get_user(user.username, function(err, user_doc){
       var duser = user_doc; //The user from the database
+      
       if( err != null ) { //User doesn't exists, create new
         console.log("user does not exists!");
         //Create user
-        //people[socket.id].color = getRandomColor();
         duser._id = user.username;
         duser.name = user.username;
         duser.color = getRandomColor();
         duser.password = user.password;
+        duser.online = true;
+
         console.log(duser);
+
         create_user(duser, function(err, user_doc){});
         socket.emit('usermsg', 'Welcome ' + people[socket.id].name );
-      } else if(duser.password != user.password) {  //if user exists
+      } else if(duser.password != user.password) {  //if user exists & bad password
         console.log('DB user: ' + duser);
         console.log('wrong password');
         var jsonuser = JSON.stringify(user);
@@ -116,7 +119,7 @@ io.on('connection', function(socket) {
   // Log when a user disconects
   socket.on('disconnect', function() {
     console.log(people[socket.id].name + ' disconnected from the socket.io server');
-      socket.broadcast.emit('usermsg','Server: ' + people[socket.id].name + ' disconnected');
+    socket.broadcast.emit('usermsg','Server: ' + people[socket.id].name + ' disconnected');
   });
 
   // When a message is received, emit it to everyone
