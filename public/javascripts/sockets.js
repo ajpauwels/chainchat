@@ -1,12 +1,21 @@
 var socket = io();
 
 $(document).ready(function() {
-	var username = prompt("Who are you?", "Username");
-	while( username == "Username" || username.trim() == "") {
-		username = prompt("Please make a new username", "Username");
+	var user = {};
+	//start prompting for username/password
+	user.username = prompt("Who are you?", "Username");
+	user.username = user.username.trim();
+	while( user.username == "Username" || user.username.trim() == "") {
+		user.username = prompt("Please make a new username", "Username");
 	}
-	username = username.trim();
-	socket.emit('username', username);
+	//user.username = user.username.trim();
+	user.password = prompt("Password for " + user.username + ":");
+	//
+
+	
+	var juser = JSON.stringify(user);
+	console.log(juser);
+	socket.emit('username', juser);
 	$('#send').click(function() {
 		socket.emit('message', $('#chatinput').val());
 		$('#chatinput').val('');
@@ -21,6 +30,14 @@ $(document).ready(function() {
 	});
 });
 
+
+
+socket.on('password', function(juser){
+	var user = JSON.parse(juser);
+	user.password = prompt("Wrong password, try again", 'Password');
+	var rejson = JSON.stringify(user);
+	socket.emit('username', rejson);
+});
 socket.on('usermsg', function(msg) {
 	$('#chatview').append($('<p>', {class: "welcome"}).text(msg));
 	updateScroll();
@@ -33,6 +50,15 @@ socket.on('message', function(msg) {
 	newspan.text(usr.name[0].toLowerCase());
 	newpelem.text(usr.msg);
 	newpelem.prepend(newspan);
+	var d = new Date();
+	var h = d.getUTCHours() - 4;
+	var m = d.getUTCMinutes();
+	if(m.toString().length == 1 ) {
+		m = '0' + m;
+	}
+	var timelem = $('<p>', {class: "time"});
+	timelem.text(h.toString() + ':' + m.toString());
+	newpelem.prepend(timelem);
 	$('#chatview').append(newpelem);
 	updateScroll();
 });
