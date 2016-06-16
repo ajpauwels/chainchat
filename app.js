@@ -30,15 +30,6 @@ var new_creds = {
 nano = require('nano')('https://' + new_creds.username + ':' + new_creds.password + '@' + new_creds.host + ':' + new_creds.port);	//lets use api key to make the docs
 db = nano.use("users"); 
 
-/* OLD DO NOT USE
-var Cloudant = require('cloudant');
-var ckey = 'itedifergaideredisseckst';
-var cpass = '336c044aff82222a34828992bdbc830ff5a6bc5e';
-var cloudant = Cloudant({acount: "cc", key: ckey, password: cpass});*/
-
-//var db = cloudant.db.user('users');
-
-
 // Routing files
 var routes = require('./routes/index');
 var users = require('./routes/users');
@@ -49,12 +40,46 @@ var io = require('socket.io')();
 var people = {};
 app.io = io;
 
-// Get our REST client
-var Client = require('node-rest-client').Client;
-var rest = new Client();
-
 // Process blockchain credentials based environment (Bluemix vs. local)
 var creds = require('./creds').credentials;
+
+// Setup and configure the hyperledger SDK
+var hlc = require('hlc');
+var chain = hlc.newChain("chainchat");
+chain.setKeyValStore(hlc.newFileKeyValStore('./tmp/keyValStore'));
+
+// Retrieve the CA credentials and set member services in the SDK - should only be one
+var caCreds = null;
+for (var key in creds.ca) {
+  if (creds.ca.hasOwnProperty(key)) {
+    caCreds = creds.ca[key];
+  }
+}
+if (caCreds == null) {
+  console.log("[ERROR] Unable to retrieve credentials for the member services");
+} else {
+  chain.setMemberServicesUrl("grpc://%s:%s", caCreds.discovery_host, caCreds.discovery_port);
+}
+
+console.log("grpc://%s:%s", caCreds.discovery_host, caCreds.discovery_port);
+
+// Retrieve and set the peers
+for (var i in creds.peers) {
+  var peer = creds.peers[i];
+  chain.addPeer("grpc://%s:%s", peer.discovery_host, peer.discovery_port);
+  console.log("grpc://%s:%s", peer.discovery_host, peer.discovery_port);
+}
+
+// Set the chaincode's registrar
+chain.enroll("user_type1_376204471b", "bf912166ab", function(err, registrarUser) {
+  if (err) {
+    console.log(err);
+    return console.log("[ERROR] Unable to enroll the registrar user: %s", err);
+  }
+
+  chain.setRegistrar(registrarUser);
+});
+
 
 // View engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -128,25 +153,32 @@ io.on('connection', function(socket) {
     console.log('New message from ' + people[socket.id].name +': ' + msg);
     io.emit('message', JSON.stringify(people[socket.id]));
 
-    if (msg == 'bc') {
-      var payload = {
-        enrollId: creds.users[2].enrollId,
-        enrollSecret: creds.users[2].enrollSecret
-      };
+    // Check if there's a command
+    var inputArr = msg.split(" ");
+    switch (inputArr[0]) {
+      // Register the user
+      case "register":
+        if (inputArr.length < 4) {
+          console.log("[ERROR] Not enough arguments, expected 4 (command username account affiliation)");
+          break;
+        }
+        var regReq = {
+          enrollmentID: inputArr[1],
+          account: inputArr[2],
+          affiliation: inputArr[3]
+        }
 
-      var args = {
-        data: payload,
-        headers: { "Content-Type": "application/json" }
-      };
+        chain.registerAndEnroll(regReq, function(err, user) {
+          if (err) {
+            console.log("[ERROR] Could not register user " + regReq.enrollmentID + ": " + err);
+            return;
+          }
+        });
+        break;
 
-
-      rest.post(creds.peers[0].api_url + "/registrar", args, function(data, response) {
-        console.log("Data:");
-        console.log(data);
-        console.log("\n");
-        console.log("Response:");
-        console.log(response);
-      });
+      default:
+        console.log("[ERROR] Could not recognize given command");
+        break;
     }
   });
 });

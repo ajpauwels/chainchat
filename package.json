@@ -13,10 +13,10 @@
     "express": "~4.13.1",
     "ibm-blockchain-js": "^1.2.3",
     "morgan": "~1.6.1",
-    "node-rest-client": "^1.8.0",
     "pug": "~2.0.0-beta2",
     "serve-favicon": "~2.3.0",
     "socket.io": "^1.4.6",
+    "hlc": "~0.0.11",
     "nano": "6.1.3"
   }
 }
