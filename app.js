@@ -39,7 +39,7 @@ var app = express();
 var io = require('socket.io')();
 var people = {};
 app.io = io;
-
+/*
 // Process blockchain credentials based environment (Bluemix vs. local)
 var creds = require('./creds').credentials;
 
@@ -79,7 +79,7 @@ chain.enroll("user_type1_376204471b", "bf912166ab", function(err, registrarUser)
 
   chain.setRegistrar(registrarUser);
 });
-
+*/
 
 // View engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -155,6 +155,7 @@ io.on('connection', function(socket) {
 
     // Check if there's a command
     var inputArr = msg.split(" ");
+    /*
     switch (inputArr[0]) {
       // Register the user
       case "register":
@@ -179,7 +180,8 @@ io.on('connection', function(socket) {
       default:
         console.log("[ERROR] Could not recognize given command");
         break;
-    }
+    }*/
+    
   });
 });
 

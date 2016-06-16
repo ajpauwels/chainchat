@@ -50,15 +50,10 @@ socket.on('message', function(msg) {
 	newspan.text(usr.name[0].toLowerCase());
 	newpelem.text(usr.msg);
 	newpelem.prepend(newspan);
-	var d = new Date();
-	var h = d.getUTCHours() - 4;
-	var m = d.getUTCMinutes();
-	if(m.toString().length == 1 ) {
-		m = '0' + m;
-	}
-	var timelem = $('<p>', {class: "time"});
-	timelem.text(h.toString() + ':' + m.toString());
-	newpelem.prepend(timelem);
+	var d = new Date().toLocaleTimeString();
+	var timelem = $('<span>', {class: "time"});
+	timelem.text(d.toString());
+	newpelem.append(timelem);
 	$('#chatview').append(newpelem);
 	updateScroll();
 });
