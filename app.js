@@ -58,24 +58,29 @@ for (var key in creds.ca) {
 if (caCreds == null) {
   console.log("[ERROR] Unable to retrieve credentials for the member services");
 } else {
-  chain.setMemberServicesUrl("grpc://%s:%s", caCreds.discovery_host, caCreds.discovery_port);
+  //chain.setMemberServicesUrl("grpc://%s:%s", caCreds.discovery_host, caCreds.discovery_port);
+  chain.setMemberServicesUrl("grpc://ajp-ca.rtp.raleigh.ibm.com:50051");
 }
 
-console.log("grpc://%s:%s", caCreds.discovery_host, caCreds.discovery_port);
+//console.log("grpc://%s:%s", caCreds.discovery_host, caCreds.discovery_port);
 
 // Retrieve and set the peers
-for (var i in creds.peers) {
-  var peer = creds.peers[i];
-  chain.addPeer("grpc://%s:%s", peer.discovery_host, peer.discovery_port);
-  console.log("grpc://%s:%s", peer.discovery_host, peer.discovery_port);
-}
+// for (var i in creds.peers) {
+//   var peer = creds.peers[i];
+//   chain.addPeer("grpc://%s:%s", peer.discovery_host, peer.discovery_port);
+//   console.log("grpc://%s:%s", peer.discovery_host, peer.discovery_port);
+// }
+chain.addPeer("grpc://ajp-p1.rtp.raleigh.ibm.com:30303");
+chain.addPeer("grpc://ajp-p2.rtp.raleigh.ibm.com:30303");
 
 // Set the chaincode's registrar
-chain.enroll("user_type1_376204471b", "bf912166ab", function(err, registrarUser) {
+chain.enroll("test_user9", "H80SiB5ODKKQ", function(err, registrarUser) {
   if (err) {
     console.log(err);
     return console.log("[ERROR] Unable to enroll the registrar user: %s", err);
   }
+
+  console.log("[SUCCESS] Enrolled the registrar user");
 
   chain.setRegistrar(registrarUser);
 });
