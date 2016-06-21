@@ -39,7 +39,7 @@ var app = express();
 var io = require('socket.io')();
 var people = {};
 app.io = io;
-/*
+
 // Process blockchain credentials based environment (Bluemix vs. local)
 var creds = require('./creds').credentials;
 
@@ -62,29 +62,47 @@ if (caCreds == null) {
   chain.setMemberServicesUrl("grpc://ajp-ca.rtp.raleigh.ibm.com:50051");
 }
 
-//console.log("grpc://%s:%s", caCreds.discovery_host, caCreds.discovery_port);
+// console.log("grpc://%s:%s", caCreds.discovery_host, caCreds.discovery_port);
 
 // Retrieve and set the peers
-// for (var i in creds.peers) {
-//   var peer = creds.peers[i];
-//   chain.addPeer("grpc://%s:%s", peer.discovery_host, peer.discovery_port);
-//   console.log("grpc://%s:%s", peer.discovery_host, peer.discovery_port);
-// }
+for (var i in creds.peers) {
+  var peer = creds.peers[i];
+  // chain.addPeer("grpc://%s:%s", peer.discovery_host, peer.discovery_port);
+  // console.log("grpc://%s:%s", peer.discovery_host, peer.discovery_port);
+}
 chain.addPeer("grpc://ajp-p1.rtp.raleigh.ibm.com:30303");
 chain.addPeer("grpc://ajp-p2.rtp.raleigh.ibm.com:30303");
 
 // Set the chaincode's registrar
-chain.enroll("test_user9", "H80SiB5ODKKQ", function(err, registrarUser) {
+chain.enroll("ajp", "trainisland", function(err, registrarUser) {
   if (err) {
     console.log(err);
     return console.log("[ERROR] Unable to enroll the registrar user: %s", err);
   }
-
-  console.log("[SUCCESS] Enrolled the registrar user");
-
   chain.setRegistrar(registrarUser);
+  console.log("[SUCCESS] Enrolled the registrar user: %s", registrarUser);
+
+  // Deploy the chaincode
+  var deployReq = {
+    args: ["test", "test2"],
+    chaincodeID: "chainchat",
+    fcn: "Init",
+    chaincodePath: "github.com/ajpauwels/learn-chaincode"
+  };
+
+  var deployTx = registrarUser.deploy(deployReq);
+
+  // Store chaincode ID on successful deploy
+  deployTx.on('complete', function(results) {
+    console.log("[SUCCESS] Deployed chaincode (ID: %s): %j", results.chaincodeID, results);
+    chain.chaincodeID = results.chaincodeID;
+  });
+
+  // Report deployment error
+  deployTx.on('error', function(err) {
+    console.log("[ERROR] Failed to deploy chaincode: %j", err);
+  });
 });
-*/
 
 // View engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -160,7 +178,7 @@ io.on('connection', function(socket) {
 
     // Check if there's a command
     var inputArr = msg.split(" ");
-    /*
+
     switch (inputArr[0]) {
       // Register the user
       case "register":
@@ -171,21 +189,31 @@ io.on('connection', function(socket) {
         var regReq = {
           enrollmentID: inputArr[1],
           account: inputArr[2],
-          affiliation: inputArr[3]
+          affiliation: inputArr[3],
+          registrar: {
+            roles: ["client"],
+            delegateRoles: ["client"]
+          }
         }
 
-        chain.registerAndEnroll(regReq, function(err, user) {
+        chain.register(regReq, function(err, user) {
           if (err) {
             console.log("[ERROR] Could not register user " + regReq.enrollmentID + ": " + err);
             return;
           }
+          console.log("[SUCCES] Registered user " + regReq.enrollmentID);
         });
         break;
 
       default:
+        var invokeReq = {
+          chaincodeID: chain.chaincodeID,
+          fcn: "write",
+          args: ["cunt", "muffin"],
+        };
         console.log("[ERROR] Could not recognize given command");
         break;
-    }*/
+    }
     
   });
 });
